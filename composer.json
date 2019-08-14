@@ -1,0 +1,19 @@
+{
+    "name": "johncorrelli/planning-center-spotify",
+    "description": "Syncs your songs in services to spotify playlist",
+    "type": "project",
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+          "App\\": "app"
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.15"
+    },
+    "scripts": {
+        "standards": "php-cs-fixer fix --dry-run --show-progress=none --verbose --diff --diff-format=udiff",
+        "standards:fix": "php-cs-fixer fix"
+    }
+}
