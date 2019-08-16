@@ -61,26 +61,6 @@ class Spotify
     }
 
     /**
-     * Returns the first 50 playlists for the current user.
-     *
-     * @return array
-     */
-    public function getPlaylists(): array
-    {
-        return $this->api->request('GET', 'me/playlists?limit=50')->items;
-    }
-
-    /**
-     * Returns the current user.
-     *
-     * @return object`
-     */
-    public function me(): object
-    {
-        return $this->api->request('GET', 'me');
-    }
-
-    /**
      * Updates a playlist to the specified songs.
      *
      * @param string $playlistId
@@ -138,6 +118,16 @@ class Spotify
     }
 
     /**
+     * Returns the first 50 playlists for the current user.
+     *
+     * @return array
+     */
+    protected function getPlaylists(): array
+    {
+        return $this->api->request('GET', 'me/playlists?limit=50')->items;
+    }
+
+    /**
      * Formats the links from a url to a Spotify song uri..
      *
      * @param array $songs
@@ -151,6 +141,16 @@ class Spotify
 
             return "spotify:track:{$parts[1]}";
         }, $songs));
+    }
+
+    /**
+     * Returns the current user.
+     *
+     * @return object`
+     */
+    protected function me(): object
+    {
+        return $this->api->request('GET', 'me');
     }
 
     /**

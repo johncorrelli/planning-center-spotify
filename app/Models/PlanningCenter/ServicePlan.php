@@ -53,60 +53,6 @@ class ServicePlan
     }
 
     /**
-     * Returns an array of the order of service items.
-     *
-     * @param int $planId
-     *
-     * @return array
-     */
-    public function getOrderOfService(int $planId): array
-    {
-        return $this->api->request(
-            'GET',
-            "service_types/{$this->serviceTypeId}/plans/{$planId}/items"
-        )->data;
-    }
-
-    /**
-     * Returns the only songs that contain links to Spotify.
-     *
-     * @param array $songs The Songs
-     *
-     * @return array
-     */
-    public function getSongLinks(array $songs): array
-    {
-        $spotifySongs = [];
-
-        foreach ($songs as $song) {
-            $spotifySongs = array_merge($spotifySongs, $song->spotifyLinks);
-        }
-
-        return $spotifySongs;
-    }
-
-    /**
-     * Returns only the Songs from the ServicePlan.
-     *
-     * @param array $orderOfService
-     *
-     * @return array
-     */
-    public function getSongsFromOrderOfService(array $orderOfService): array
-    {
-        $songItems = array_values(array_filter($orderOfService, function ($item) {
-            return $item->attributes->item_type === self::SONG_TYPE;
-        }));
-
-        return array_map(
-            function ($songItem) {
-                return new Song($songItem->relationships->song->data->id, $this->api);
-            },
-            $songItems
-        );
-    }
-
-    /**
      * Syncs the Songs of this ServicePlan with a Spotify Playlist
      *
      * @param Spotify $spotify
@@ -127,6 +73,60 @@ class ServicePlan
         $playlist = $spotify->getOrCreatePlaylistByName($playlistName);
 
         $spotify->setPlaylistSongs($playlist->id, $spotifySongs);
+    }
+
+    /**
+     * Returns an array of the order of service items.
+     *
+     * @param int $planId
+     *
+     * @return array
+     */
+    protected function getOrderOfService(int $planId): array
+    {
+        return $this->api->request(
+            'GET',
+            "service_types/{$this->serviceTypeId}/plans/{$planId}/items"
+        )->data;
+    }
+
+    /**
+     * Returns the only songs that contain links to Spotify.
+     *
+     * @param array $songs The Songs
+     *
+     * @return array
+     */
+    protected function getSongLinks(array $songs): array
+    {
+        $spotifySongs = [];
+
+        foreach ($songs as $song) {
+            $spotifySongs = array_merge($spotifySongs, $song->spotifyLinks);
+        }
+
+        return $spotifySongs;
+    }
+
+    /**
+     * Returns only the Songs from the ServicePlan.
+     *
+     * @param array $orderOfService
+     *
+     * @return array
+     */
+    protected function getSongsFromOrderOfService(array $orderOfService): array
+    {
+        $songItems = array_values(array_filter($orderOfService, function ($item) {
+            return $item->attributes->item_type === self::SONG_TYPE;
+        }));
+
+        return array_map(
+            function ($songItem) {
+                return new Song($songItem->relationships->song->data->id, $this->api);
+            },
+            $songItems
+        );
     }
 
     /**
