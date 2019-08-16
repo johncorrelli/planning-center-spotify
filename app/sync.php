@@ -9,6 +9,7 @@ use App\Models\Credentials;
 use App\Models\PlanningCenter\PlanningCenter;
 use App\Models\PlanningCenter\PlanningCenterApi;
 use App\Models\Spotify\Spotify;
+use App\Models\Spotify\SpotifyApi;
 use App\Models\Spotify\SpotifyAuthorization;
 
 // Setup initial authorization
@@ -31,10 +32,8 @@ $spotifyAuthToken = $spotifyAuth->generateAuthToken();
 $credentials->set('SPOTIFY_ACCESS_TOKEN', $spotifyAuth->getAccessToken());
 $credentials->set('SPOTIFY_REFRESH_TOKEN', $spotifyAuth->getRefreshToken());
 
-$spotify = new Spotify(
-    $spotifyAuthToken,
-    new Api()
-);
+$spotifyApi = new SpotifyApi($spotifyAuthToken);
+$spotify = new Spotify($spotifyApi);
 
 // Get data from planning center
 $planningCenterApi = new PlanningCenterApi(

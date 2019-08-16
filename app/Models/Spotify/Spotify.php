@@ -2,8 +2,6 @@
 
 namespace App\Models\Spotify;
 
-use App\Models\Api;
-
 class Spotify
 {
     const PLAYLIST_DESCRIPTION = 'PlanningCenter weekly playlist';
@@ -14,28 +12,17 @@ class Spotify
     public $userId;
 
     /**
-     * @var Api
+     * @var SpotifyApi
      */
     private $api;
-
-    /**
-     * @var string
-     */
-    private $authToken;
-
     /**
      * @var array
      */
     private $existingPlaylists;
 
-    public function __construct(string $authToken, Api $api)
+    public function __construct(SpotifyApi $api)
     {
-        $this->authToken = $authToken;
         $this->api = $api;
-
-        $this->api->setBaseUrl('https://api.spotify.com/v1');
-        $this->api->setAuthorization("Authorization: Bearer {$authToken}");
-
         $this->setUserId();
         $this->existingPlaylists = $this->getPlaylists();
     }
