@@ -7,6 +7,7 @@ require __DIR__.'/../vendor/autoload.php';
 use App\Models\Api;
 use App\Models\Credentials;
 use App\Models\PlanningCenter\PlanningCenter;
+use App\Models\PlanningCenter\PlanningCenterApi;
 use App\Models\Spotify\Spotify;
 use App\Models\Spotify\SpotifyAuthorization;
 
@@ -36,11 +37,12 @@ $spotify = new Spotify(
 );
 
 // Get data from planning center
-$planningCenter = new PlanningCenter(
+$planningCenterApi = new PlanningCenterApi(
     $credentials->get('PLANNING_CENTER_APPLICATION_ID'),
-    $credentials->get('PLANNING_CENTER_SECRET'),
-    new Api()
+    $credentials->get('PLANNING_CENTER_SECRET')
 );
+
+$planningCenter = new PlanningCenter($planningCenterApi);
 
 $serviceTypes = $planningCenter->getServiceTypes();
 

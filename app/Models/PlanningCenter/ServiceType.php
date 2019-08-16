@@ -2,7 +2,6 @@
 
 namespace App\Models\PlanningCenter;
 
-use App\Models\Api;
 use App\Models\Spotify\Spotify;
 use DateTimeImmutable;
 
@@ -14,7 +13,7 @@ class ServiceType
     const NUM_SERVICES = 4;
 
     /**
-     * @var Api
+     * @var PlanningCenterApi
      */
     protected $api;
 
@@ -27,9 +26,9 @@ class ServiceType
      * Handles the API response from Planning Center and creates a new object.
      *
      * @param object $serviceType
-     * @param Api $api
+     * @param PlanningCenterApi $api
      */
-    public function __construct(object $serviceType, Api $api)
+    public function __construct(object $serviceType, PlanningCenterApi $api)
     {
         $this->id = $serviceType->id;
         $this->api = $api;
