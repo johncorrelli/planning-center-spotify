@@ -19,7 +19,7 @@ class ServicePlan
     /**
      * The id of the ServicePlan.
      *
-     * @var [type]
+     * @var int
      */
     public $id;
 
