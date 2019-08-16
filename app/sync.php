@@ -31,6 +31,11 @@ $spotifyAuthToken = $spotifyAuth->generateAuthToken();
 $credentials->set('SPOTIFY_ACCESS_TOKEN', $spotifyAuth->getAccessToken());
 $credentials->set('SPOTIFY_REFRESH_TOKEN', $spotifyAuth->getRefreshToken());
 
+$spotify = new Spotify(
+    $spotifyAuthToken,
+    new Api()
+);
+
 // Get data from planning center
 $planningCenter = new PlanningCenter(
     $credentials->get('PLANNING_CENTER_APPLICATION_ID'),
@@ -42,11 +47,6 @@ $planningCenter = new PlanningCenter(
 $today = new DateTimeImmutable();
 $services = $planningCenter->getServicePlansAfter($today);
 
-// Post service songs to Spotify playlists
-$spotify = new Spotify(
-    $spotifyAuthToken,
-    new Api()
-);
-
-$existingPlaylists = $spotify->getPlaylists();
-$spotify->createPlaylists($existingPlaylists, $services);
+foreach ($services as $service) {
+    $service->syncWithSpotify($spotify);
+}

@@ -23,6 +23,11 @@ class Spotify
      */
     private $authToken;
 
+    /**
+     * @var array
+     */
+    private $existingPlaylists;
+
     public function __construct(string $authToken, Api $api)
     {
         $this->authToken = $authToken;
@@ -32,53 +37,27 @@ class Spotify
         $this->api->setAuthorization("Authorization: Bearer {$authToken}");
 
         $this->setUserId();
+        $this->existingPlaylists = $this->getPlaylists();
     }
 
     /**
-     * Create a new playlist in Spotify.
+     * Gets a playlist by name, if one does not exist, a new playlist is returned
      *
-     * @param string $playlistName The name of the new playlist
+     * @param string $playlistName
      *
-     * @return string
+     * @return object
      */
-    public function createPlaylist(string $playlistName): string
+    public function getOrCreatePlaylistByName(string $playlistName): object
     {
-        $newPlaylist = $this->api->request(
-            'POST',
-            "users/{$this->userId}/playlists",
-            [
-                'name' => $playlistName,
-                'description' => self::PLAYLIST_DESCRIPTION,
-            ]
-        );
-
-        return $newPlaylist->id;
-    }
-
-    /**
-     * Loops through the $services and creates (or updates) a playlist based off of the songs within the service.
-     *
-     * @param array $existingPlaylists
-     * @param array $services
-     */
-    public function createPlaylists(array $existingPlaylists, array $services): void
-    {
-        foreach ($services as $service) {
-            $playlistName = "Sunday Setlist: {$service->date}";
-            $spotifySongs = $service->getSongLinks();
-
-            if (count($spotifySongs) === 0) {
+        foreach ($this->existingPlaylists as $playlist) {
+            if ($playlist->name !== $playlistName) {
                 continue;
             }
 
-            $playlistId =
-                $this->getPlaylistByName($existingPlaylists, $playlistName)
-                ?? $this->createPlaylist($playlistName);
-
-            $this->setPlaylistSongs($playlistId, $spotifySongs);
-
-            echo "Created or Updated playlist: {$playlistName}.\n";
+            return $playlist;
         }
+
+        return $this->createPlaylist($playlistName);
     }
 
     /**
@@ -99,6 +78,42 @@ class Spotify
     public function me(): object
     {
         return $this->api->request('GET', 'me');
+    }
+
+    /**
+     * Updates a playlist to the specified songs.
+     *
+     * @param string $playlistId
+     * @param array $links The array of links to put into the spotify playlist
+     */
+    public function setPlaylistSongs(string $playlistId, array $links): void
+    {
+        $uris = $this->getUriFromLink($links);
+
+        $this->api->request(
+            'PUT',
+            "playlists/{$playlistId}/tracks",
+            ['uris' => $uris]
+        );
+    }
+
+    /**
+     * Create a new playlist in Spotify.
+     *
+     * @param string $playlistName The name of the new playlist
+     *
+     * @return object
+     */
+    protected function createPlaylist(string $playlistName): object
+    {
+        return $this->api->request(
+            'POST',
+            "users/{$this->userId}/playlists",
+            [
+                'name' => $playlistName,
+                'description' => self::PLAYLIST_DESCRIPTION,
+            ]
+        );
     }
 
     /**
@@ -136,23 +151,6 @@ class Spotify
 
             return "spotify:track:{$parts[1]}";
         }, $songs));
-    }
-
-    /**
-     * Updates a playlist to the specified songs.
-     *
-     * @param string $playlistId
-     * @param array $links The array of links to put into the spotify playlist
-     */
-    protected function setPlaylistSongs(string $playlistId, array $links): void
-    {
-        $uris = $this->getUriFromLink($links);
-
-        $this->api->request(
-            'PUT',
-            "playlists/{$playlistId}/tracks",
-            ['uris' => $uris]
-        );
     }
 
     /**
