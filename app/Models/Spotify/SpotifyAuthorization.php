@@ -2,8 +2,6 @@
 
 namespace App\Models\Spotify;
 
-use App\Models\Api;
-
 class SpotifyAuthorization
 {
     const RESPONSE_URI = 'https://postman-echo.com/post';
@@ -14,7 +12,7 @@ class SpotifyAuthorization
     protected $accessToken;
 
     /**
-     * @var Api
+     * @var SpotifyAuthorizationApi
      */
     protected $api;
 
@@ -26,23 +24,14 @@ class SpotifyAuthorization
     /**
      * @var string
      */
-    protected $clientSecret;
-
-    /**
-     * @var string
-     */
     protected $refreshToken;
 
-    public function __construct(string $clientId, string $clientSecret, ?string $accessToken, ?string $refreshToken = null, Api $api)
+    public function __construct(string $clientId, ?string $accessToken, ?string $refreshToken = null, SpotifyAuthorizationApi $api)
     {
         $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
         $this->accessToken = $accessToken;
         $this->refreshToken = $refreshToken;
         $this->api = $api;
-
-        $this->api->setBaseUrl('https://accounts.spotify.com/api');
-        $this->api->setPostBodyFormat('application/x-www-form-urlencoded');
     }
 
     /**
@@ -120,8 +109,6 @@ class SpotifyAuthorization
      */
     protected function getAccessTokenFromAuthorizationCode(string $authorizationCode): string
     {
-        $authorization = base64_encode("{$this->clientId}:{$this->clientSecret}");
-
         $getCredentials = $this->api->request(
             'POST',
             'token',
@@ -129,9 +116,6 @@ class SpotifyAuthorization
                 'grant_type' => 'authorization_code',
                 'code' => $authorizationCode,
                 'redirect_uri' => self::RESPONSE_URI,
-            ],
-            [
-                "Authorization: Basic {$authorization}",
             ]
         );
 
@@ -153,17 +137,12 @@ class SpotifyAuthorization
      */
     protected function refreshAccessToken(string $refreshToken): string
     {
-        $authorization = base64_encode("{$this->clientId}:{$this->clientSecret}");
-
         $getCredentials = $this->api->request(
             'POST',
             'token',
             [
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $refreshToken,
-            ],
-            [
-                "Authorization: Basic {$authorization}",
             ]
         );
 
