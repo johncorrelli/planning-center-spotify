@@ -2,8 +2,6 @@
 
 namespace App\Models\PlanningCenter;
 
-use App\Models\Api;
-
 class Song
 {
     const SPOTIFY_ATTACHMENT_TYPE = 'AttachmentSpotify';
@@ -40,15 +38,15 @@ class Song
      * The API object used to connect to Planning Center.
      * This is inherited from PlanningCenter and is already authorized.
      *
-     * @var Api
+     * @var PlanningCenterApi
      */
     protected $api;
 
     /**
      * @param int $songId
-     * @param Api $api
+     * @param PlanningCenterApi $api
      */
-    public function __construct(int $songId, Api $api)
+    public function __construct(int $songId, PlanningCenterApi $api)
     {
         $this->id = $songId;
 

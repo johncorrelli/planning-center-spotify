@@ -4,11 +4,13 @@ namespace App;
 
 require __DIR__.'/../vendor/autoload.php';
 
-use App\Models\Api;
 use App\Models\Credentials;
 use App\Models\PlanningCenter\PlanningCenter;
+use App\Models\PlanningCenter\PlanningCenterApi;
 use App\Models\Spotify\Spotify;
+use App\Models\Spotify\SpotifyApi;
 use App\Models\Spotify\SpotifyAuthorization;
+use App\Models\Spotify\SpotifyAuthorizationApi;
 
 // Setup initial authorization
 $credentialsFile = __DIR__.'/../storage/auth.json';
@@ -16,12 +18,15 @@ $credentials = new Credentials($credentialsFile);
 $credentials->loadOrCreate();
 
 // Setup Spotify user token
-$spotifyAuth = new SpotifyAuthorization(
+$spotifyAuthorizationApi = new SpotifyAuthorizationApi(
     $credentials->get('SPOTIFY_CLIENT_ID'),
     $credentials->get('SPOTIFY_CLIENT_SECRET'),
+);
+$spotifyAuth = new SpotifyAuthorization(
+    $credentials->get('SPOTIFY_CLIENT_ID'),
     $credentials->get('SPOTIFY_ACCESS_TOKEN'),
     $credentials->get('SPOTIFY_REFRESH_TOKEN'),
-    new Api()
+    $spotifyAuthorizationApi
 );
 
 $spotifyAuthToken = $spotifyAuth->generateAuthToken();
@@ -30,17 +35,16 @@ $spotifyAuthToken = $spotifyAuth->generateAuthToken();
 $credentials->set('SPOTIFY_ACCESS_TOKEN', $spotifyAuth->getAccessToken());
 $credentials->set('SPOTIFY_REFRESH_TOKEN', $spotifyAuth->getRefreshToken());
 
-$spotify = new Spotify(
-    $spotifyAuthToken,
-    new Api()
-);
+$spotifyApi = new SpotifyApi($spotifyAuthToken);
+$spotify = new Spotify($spotifyApi);
 
 // Get data from planning center
-$planningCenter = new PlanningCenter(
+$planningCenterApi = new PlanningCenterApi(
     $credentials->get('PLANNING_CENTER_APPLICATION_ID'),
-    $credentials->get('PLANNING_CENTER_SECRET'),
-    new Api()
+    $credentials->get('PLANNING_CENTER_SECRET')
 );
+
+$planningCenter = new PlanningCenter($planningCenterApi);
 
 $serviceTypes = $planningCenter->getServiceTypes();
 

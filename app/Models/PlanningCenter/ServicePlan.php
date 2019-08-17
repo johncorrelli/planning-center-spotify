@@ -2,7 +2,6 @@
 
 namespace App\Models\PlanningCenter;
 
-use App\Models\Api;
 use App\Models\Spotify\Spotify;
 
 class ServicePlan
@@ -27,7 +26,7 @@ class ServicePlan
      * The API object used to connect to Planning Center.
      * This is inherited from PlanningCenter and is already authorized.
      *
-     * @var Api
+     * @var PlanningCenterApi
      */
     protected $api;
 
@@ -41,9 +40,9 @@ class ServicePlan
     /**
      * @param int $serviceTypeId
      * @param object $servicePlan
-     * @param Api $api
+     * @param PlanningCenterApi $api
      */
-    public function __construct(int $serviceTypeId, object $servicePlan, Api $api)
+    public function __construct(int $serviceTypeId, object $servicePlan, PlanningCenterApi $api)
     {
         $this->id = $servicePlan->id;
         $this->date = date('Y-m-d', strtotime($servicePlan->attributes->sort_date));
