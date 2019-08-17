@@ -9,7 +9,6 @@ use App\Models\Credentials;
 use App\Models\PlanningCenter\PlanningCenter;
 use App\Models\Spotify\Spotify;
 use App\Models\Spotify\SpotifyAuthorization;
-use DateTimeImmutable;
 
 // Setup initial authorization
 $credentialsFile = __DIR__.'/../storage/auth.json';
@@ -40,13 +39,11 @@ $spotify = new Spotify(
 $planningCenter = new PlanningCenter(
     $credentials->get('PLANNING_CENTER_APPLICATION_ID'),
     $credentials->get('PLANNING_CENTER_SECRET'),
-    $credentials->get('PLANNING_CENTER_SERVICE_TYPE_ID'),
     new Api()
 );
 
-$today = new DateTimeImmutable();
-$services = $planningCenter->getServicePlansAfter($today);
+$serviceTypes = $planningCenter->getServiceTypes();
 
-foreach ($services as $service) {
-    $service->syncWithSpotify($spotify);
+foreach ($serviceTypes as $serviceType) {
+    $serviceType->syncServicePlansWithSpotify($spotify);
 }

@@ -43,7 +43,6 @@ class Credentials
         $defaultCredentials = [
             'PLANNING_CENTER_APPLICATION_ID' => '',
             'PLANNING_CENTER_SECRET' => '',
-            'PLANNING_CENTER_SERVICE_TYPE_ID' => '',
             'SPOTIFY_CLIENT_ID' => '',
             'SPOTIFY_CLIENT_SECRET' => '',
         ];

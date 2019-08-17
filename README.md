@@ -16,11 +16,6 @@ This takes about 10 minutes for initial setup, after that things run smoothly wi
 - You'll then need to setup a Planning Center [developer account](https://developer.planning.center/docs/#/introduction).
   - Create a new **Personal Access Token**
   - Note your `Application Id` and `Secret`
-- To get your Service Id, you'll want to:
-  - Go to your Planning Center Dashboard
-  - Click gear to the top right of your serivce and select `Settings`
-  - Your `Service ID` will be at the end of the url
-    - ie: if the url is `https://services.planningcenteronline.com/service_types/1000` your Service ID is `1000`
 - Then head over to Spotify and create an [application](https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app)
   - Create a new application
   - You are not creating a commercial integration
@@ -32,13 +27,12 @@ Running the script is as simple as running `./sync` from the root directory of t
 
 ### For the first time:
 
-Running this for the first time will take a few extra seconds of setup, as we'll need to enter the five values we generated in Step 2.
+Running this for the first time will take a few extra seconds of setup, as we'll need to enter the four values we generated in Step 2.
 
 Those values are:
   - Planning Center:
     - `Application Id`
     - `Secret Key`
-    - `Service Id`
   - Spotify
     - `Client ID`
     - `Client Secret`
