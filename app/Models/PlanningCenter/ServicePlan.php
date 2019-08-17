@@ -3,6 +3,7 @@
 namespace App\Models\PlanningCenter;
 
 use App\Models\Api;
+use App\Models\Spotify\Spotify;
 
 class ServicePlan
 {
@@ -18,16 +19,9 @@ class ServicePlan
     /**
      * The id of the ServicePlan.
      *
-     * @var [type]
+     * @var int
      */
     public $id;
-
-    /**
-     * An array containing Song objects used for this ServicePlan's service.
-     *
-     * @var [type]
-     */
-    public $songs;
 
     /**
      * The API object used to connect to Planning Center.
@@ -56,8 +50,29 @@ class ServicePlan
 
         $this->api = $api;
         $this->serviceTypeId = $serviceTypeId;
+    }
 
-        $this->songs = $this->getSongs();
+    /**
+     * Syncs the Songs of this ServicePlan with a Spotify Playlist
+     *
+     * @param Spotify $spotify
+     *
+     * @return void
+     */
+    public function syncWithSpotify(Spotify $spotify): void
+    {
+        $songs = $this->getSongs();
+        $spotifySongs = $this->getSongLinks($songs);
+
+        if (count($spotifySongs) === 0) {
+            return;
+        }
+
+        $playlistName = "Sunday Setlist: {$this->date}";
+
+        $playlist = $spotify->getOrCreatePlaylistByName($playlistName);
+
+        $spotify->setPlaylistSongs($playlist->id, $spotifySongs);
     }
 
     /**
@@ -67,7 +82,7 @@ class ServicePlan
      *
      * @return array
      */
-    public function getOrderOfService(int $planId): array
+    protected function getOrderOfService(int $planId): array
     {
         return $this->api->request(
             'GET',
@@ -78,13 +93,15 @@ class ServicePlan
     /**
      * Returns the only songs that contain links to Spotify.
      *
+     * @param array $songs The Songs
+     *
      * @return array
      */
-    public function getSongLinks(): array
+    protected function getSongLinks(array $songs): array
     {
         $spotifySongs = [];
 
-        foreach ($this->songs as $song) {
+        foreach ($songs as $song) {
             $spotifySongs = array_merge($spotifySongs, $song->spotifyLinks);
         }
 
@@ -98,7 +115,7 @@ class ServicePlan
      *
      * @return array
      */
-    public function getSongsFromOrderOfService(array $orderOfService): array
+    protected function getSongsFromOrderOfService(array $orderOfService): array
     {
         $songItems = array_values(array_filter($orderOfService, function ($item) {
             return $item->attributes->item_type === self::SONG_TYPE;

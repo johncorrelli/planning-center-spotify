@@ -23,6 +23,11 @@ class Spotify
      */
     private $authToken;
 
+    /**
+     * @var array
+     */
+    private $existingPlaylists;
+
     public function __construct(string $authToken, Api $api)
     {
         $this->authToken = $authToken;
@@ -32,6 +37,44 @@ class Spotify
         $this->api->setAuthorization("Authorization: Bearer {$authToken}");
 
         $this->setUserId();
+        $this->existingPlaylists = $this->getPlaylists();
+    }
+
+    /**
+     * Gets a playlist by name, if one does not exist, a new playlist is returned
+     *
+     * @param string $playlistName
+     *
+     * @return object
+     */
+    public function getOrCreatePlaylistByName(string $playlistName): object
+    {
+        foreach ($this->existingPlaylists as $playlist) {
+            if ($playlist->name !== $playlistName) {
+                continue;
+            }
+
+            return $playlist;
+        }
+
+        return $this->createPlaylist($playlistName);
+    }
+
+    /**
+     * Updates a playlist to the specified songs.
+     *
+     * @param string $playlistId
+     * @param array $links The array of links to put into the spotify playlist
+     */
+    public function setPlaylistSongs(string $playlistId, array $links): void
+    {
+        $uris = $this->getUriFromLink($links);
+
+        $this->api->request(
+            'PUT',
+            "playlists/{$playlistId}/tracks",
+            ['uris' => $uris]
+        );
     }
 
     /**
@@ -39,11 +82,11 @@ class Spotify
      *
      * @param string $playlistName The name of the new playlist
      *
-     * @return string
+     * @return object
      */
-    public function createPlaylist(string $playlistName): string
+    protected function createPlaylist(string $playlistName): object
     {
-        $newPlaylist = $this->api->request(
+        return $this->api->request(
             'POST',
             "users/{$this->userId}/playlists",
             [
@@ -51,54 +94,6 @@ class Spotify
                 'description' => self::PLAYLIST_DESCRIPTION,
             ]
         );
-
-        return $newPlaylist->id;
-    }
-
-    /**
-     * Loops through the $services and creates (or updates) a playlist based off of the songs within the service.
-     *
-     * @param array $existingPlaylists
-     * @param array $services
-     */
-    public function createPlaylists(array $existingPlaylists, array $services): void
-    {
-        foreach ($services as $service) {
-            $playlistName = "Sunday Setlist: {$service->date}";
-            $spotifySongs = $service->getSongLinks();
-
-            if (count($spotifySongs) === 0) {
-                continue;
-            }
-
-            $playlistId =
-                $this->getPlaylistByName($existingPlaylists, $playlistName)
-                ?? $this->createPlaylist($playlistName);
-
-            $this->setPlaylistSongs($playlistId, $spotifySongs);
-
-            echo "Created or Updated playlist: {$playlistName}.\n";
-        }
-    }
-
-    /**
-     * Returns the first 50 playlists for the current user.
-     *
-     * @return array
-     */
-    public function getPlaylists(): array
-    {
-        return $this->api->request('GET', 'me/playlists?limit=50')->items;
-    }
-
-    /**
-     * Returns the current user.
-     *
-     * @return object`
-     */
-    public function me(): object
-    {
-        return $this->api->request('GET', 'me');
     }
 
     /**
@@ -123,6 +118,16 @@ class Spotify
     }
 
     /**
+     * Returns the first 50 playlists for the current user.
+     *
+     * @return array
+     */
+    protected function getPlaylists(): array
+    {
+        return $this->api->request('GET', 'me/playlists?limit=50')->items;
+    }
+
+    /**
      * Formats the links from a url to a Spotify song uri..
      *
      * @param array $songs
@@ -139,20 +144,13 @@ class Spotify
     }
 
     /**
-     * Updates a playlist to the specified songs.
+     * Returns the current user.
      *
-     * @param string $playlistId
-     * @param array $links The array of links to put into the spotify playlist
+     * @return object`
      */
-    protected function setPlaylistSongs(string $playlistId, array $links): void
+    protected function me(): object
     {
-        $uris = $this->getUriFromLink($links);
-
-        $this->api->request(
-            'PUT',
-            "playlists/{$playlistId}/tracks",
-            ['uris' => $uris]
-        );
+        return $this->api->request('GET', 'me');
     }
 
     /**
