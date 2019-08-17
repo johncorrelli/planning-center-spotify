@@ -52,11 +52,9 @@ class ServicePlan
     }
 
     /**
-     * Syncs the Songs of this ServicePlan with a Spotify Playlist
+     * Syncs the Songs of this ServicePlan with a Spotify Playlist.
      *
      * @param Spotify $spotify
-     *
-     * @return void
      */
     public function syncWithSpotify(Spotify $spotify): void
     {

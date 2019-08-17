@@ -9,7 +9,7 @@ class PlanningCenterApi extends Api
     /**
      * @param string $applicationId your application id used to connect to Planning Center's API
      * @param string $secretKey your secret key used to connect to Planning Center's API
-     * @param [type] ...$attrs
+     * @param ...$attrs
      */
     public function __construct(string $applicationId, string $secretKey, ...$attrs)
     {

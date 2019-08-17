@@ -112,7 +112,7 @@ class Song
      * @param int $songId
      * @param int $arrangementId
      *
-     * @return object
+     * @return array
      */
     public function getSongArrangementAttachments(int $songId, int $arrangementId): array
     {

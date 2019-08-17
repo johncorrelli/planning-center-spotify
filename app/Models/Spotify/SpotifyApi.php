@@ -8,7 +8,7 @@ class SpotifyApi extends Api
 {
     /**
      * @param string $authToken your temporary authorization token for connecting to Spotify
-     * @param [type] ...$attrs
+     * @param ...$attrs
      */
     public function __construct(string $authToken, ...$attrs)
     {

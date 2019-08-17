@@ -36,10 +36,8 @@ class Api
      *
      * @param string $bodyFormat
      * @param array $body
-     *
-     * @return string
      */
-    public function formatPostBody(string $bodyFormat, array $body = []): string
+    public function formatPostBody(string $bodyFormat, array $body = [])
     {
         $this->defaultHeaders[] = "Content-Type: {$bodyFormat}";
 
@@ -66,12 +64,12 @@ class Api
      *
      * @param string $method
      * @param string $url
-     * @param null|array $body
-     * @param null|array $additionalHeaders
+     * @param array $body
+     * @param array $additionalHeaders
      *
      * @return object
      */
-    public function request(string $method, string $url, ?array $body = [], ?array $additionalHeaders = []): object
+    public function request(string $method, string $url, array $body = [], array $additionalHeaders = []): object
     {
         $request = curl_init($this->baseUrl.'/'.$url);
         $headers = array_merge($this->defaultHeaders, $additionalHeaders);
@@ -91,13 +89,13 @@ class Api
 
         curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
 
-        $body = curl_exec($request);
+        $responseBody = curl_exec($request);
 
-        if ($request['http_code'] >= 400) {
+        if (is_array($request) && $request['http_code'] >= 400) {
             throw new HttpException();
         }
 
-        return json_decode($body);
+        return json_decode($responseBody);
     }
 
     /**

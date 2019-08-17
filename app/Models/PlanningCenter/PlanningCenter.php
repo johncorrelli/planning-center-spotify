@@ -12,8 +12,6 @@ class PlanningCenter
     private $api;
 
     /**
-     * @param string $applicationId
-     * @param string $secretKey
      * @param PlanningCenterApi $api
      */
     public function __construct(PlanningCenterApi $api)

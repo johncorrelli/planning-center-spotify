@@ -9,7 +9,7 @@ class SpotifyAuthorizationApi extends Api
     /**
      * @param string $clientId your spotify app's client id
      * @param string $clientSecret your spotify app's client secret
-     * @param [type] ...$attrs
+     * @param ...$attrs
      */
     public function __construct(string $clientId, string $clientSecret, ...$attrs)
     {
