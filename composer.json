@@ -10,9 +10,11 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.15"
+        "friendsofphp/php-cs-fixer": "^2.15",
+        "phan/phan": "^2.2"
     },
     "scripts": {
+        "phan": "phan --allow-polyfill-parser",
         "standards": "php-cs-fixer fix --dry-run --show-progress=none --verbose --diff --diff-format=udiff",
         "standards:fix": "php-cs-fixer fix"
     }

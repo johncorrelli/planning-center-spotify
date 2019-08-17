@@ -28,7 +28,7 @@ class Spotify
     }
 
     /**
-     * Gets a playlist by name, if one does not exist, a new playlist is returned
+     * Gets a playlist by name, if one does not exist, a new playlist is returned.
      *
      * @param string $playlistName
      *
@@ -133,7 +133,7 @@ class Spotify
     /**
      * Returns the current user.
      *
-     * @return object`
+     * @return object
      */
     protected function me(): object
     {

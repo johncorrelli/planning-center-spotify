@@ -7,7 +7,7 @@ class SpotifyAuthorization
     const RESPONSE_URI = 'https://postman-echo.com/post';
 
     /**
-     * @var string
+     * @var null|string
      */
     protected $accessToken;
 
@@ -22,11 +22,11 @@ class SpotifyAuthorization
     protected $clientId;
 
     /**
-     * @var string
+     * @var null|string
      */
     protected $refreshToken;
 
-    public function __construct(string $clientId, ?string $accessToken, ?string $refreshToken = null, SpotifyAuthorizationApi $api)
+    public function __construct(string $clientId, ?string $accessToken, ?string $refreshToken, SpotifyAuthorizationApi $api)
     {
         $this->clientId = $clientId;
         $this->accessToken = $accessToken;
